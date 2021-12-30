@@ -1,29 +1,36 @@
 fun main() {
-    val measurements = readInput("Day01")
-    val x = measurements.asSequence()
-        .map { it.toInt() }
-        .fold(Pair(measurements[0].toInt(), 0)) { prev, next ->
-            if (next > prev.first) {
-                Pair(next, prev.second + 1)
-            } else {
-                Pair(next, prev.second)
+    fun part1(input: List<String>): Int {
+        val x = input.asSequence()
+            .map { it.toInt() }
+            .fold(Pair(input[0].toInt(), 0)) { prev, next ->
+                if (next > prev.first) {
+                    Pair(next, prev.second + 1)
+                } else {
+                    Pair(next, prev.second)
+                }
             }
-        }
 
-    println(x.second)
-/*    fun part1(input: List<String>): Int {
-        return input.size
+        return x.second
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
-    }
+        val firstWindowSum = input.subList(0, 3).sumOf { it.toInt() }
+        val x = input.asSequence()
+            .map { it.toInt() }
+            .windowed(3)
+            .fold(Pair(firstWindowSum, 0)) { prev, next ->
+                val nextWindowSum = next.sum()
+                if (nextWindowSum > prev.first) {
+                    Pair(nextWindowSum, prev.second + 1)
+                } else {
+                    Pair(nextWindowSum, prev.second)
+                }
+            }
 
-    // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day01_test")
-    check(part1(testInput) == 1)
+        return x.second
+    }
 
     val input = readInput("Day01")
     println(part1(input))
-    println(part2(input))*/
+    println(part2(input))
 }
