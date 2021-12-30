@@ -1,5 +1,3 @@
-import java.lang.IllegalArgumentException
-
 fun main() {
 
     val forwardRegex = """forward (\d)""".toRegex()
