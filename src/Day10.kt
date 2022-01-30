@@ -15,6 +15,12 @@ fun main() {
         '}' to 1197,
     )
 
+    val bracketPoints = mapOf(
+        ')' to 1,
+        ']' to 2,
+        '}' to 3,
+        '>' to 4,
+    )
 
     fun Char.isOpenBracket() = brackets.contains(this)
 
@@ -38,6 +44,29 @@ fun main() {
         return null
     }
 
+    fun getAutoCompleteIfNotCorrupted(line: String): List<Char> {
+        val s: Stack<Char> = Stack()
+        val autocompleteList = mutableListOf<Char>()
+
+        line.forEach { c ->
+            if (c.isOpenBracket()) {
+                s.push(c)
+            } else {
+                if (s.isEmpty()) return autocompleteList
+
+                val openBracket = s.pop()
+                if (!openBracket.match(c)) {
+                    return autocompleteList
+                }
+            }
+        }
+
+        return s.mapNotNull { brackets[it] }.reversed()
+    }
+
+    fun computeAutocompletePoints(complete: List<Char>): Long = complete.fold(0) { acc: Long, c: Char ->
+        acc * 5 + bracketPoints[c]!!
+    }
 
     fun part1(input: List<String>): Int {
         val result = input.sumOf {
@@ -50,23 +79,18 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        val firstWindowSum = input.subList(0, 3).sumOf { it.toInt() }
-        val x = input.asSequence()
-            .map { it.toInt() }
-            .windowed(3)
-            .fold(Pair(firstWindowSum, 0)) { prev, next ->
-                val nextWindowSum = next.sum()
-                if (nextWindowSum > prev.first) {
-                    Pair(nextWindowSum, prev.second + 1)
-                } else {
-                    Pair(nextWindowSum, prev.second)
-                }
-            }
+        val scoreList = input.map {
+            getAutoCompleteIfNotCorrupted(it)
+        }.filter {
+            it.isNotEmpty()
+        }.map {
+            computeAutocompletePoints(it)
+        }
 
-        return x.second
+        return scoreList.sorted()[scoreList.size / 2].toInt()
     }
 
     val input = readInput("Day10")
     println(part1(input))
-//    println(part2(input))
+    println(part2(input))
 }
